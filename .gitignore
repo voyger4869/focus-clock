@@ -1,0 +1,35 @@
+# ===== 依赖与构建产物 =====
+node_modules/
+dist/
+build/
+out/
+.gradle/
+*.log
+
+# ===== 安卓签名与本地配置（含敏感信息，严禁提交）=====
+*.keystore
+*.jks
+keystore.properties
+local.properties
+
+# ===== 本地工具链（体积巨大，不入库）=====
+jdk*/
+jdk*.zip
+gradle-*/
+android-sdk/
+.cxx/
+
+# ===== IDE / 编辑器 =====
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# ===== 系统临时文件 =====
+*.tmp
+*.swp
+*~
+
+# ===== 工作区内部数据 =====
+.workbuddy/

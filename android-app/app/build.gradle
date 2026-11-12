@@ -1,0 +1,55 @@
+apply plugin: 'com.android.application'
+
+// 从 keystore.properties 读取签名配置（该文件已 gitignore，请勿提交）
+// 若文件不存在，则 release 使用未签名构建（可正常安装到本地测试）
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+def keystoreProperties = new Properties()
+def hasSigningConfig = false
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    hasSigningConfig = keystoreProperties.containsKey('storeFile')
+}
+
+android {
+    namespace 'com.focus.clock'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.focus.clock"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.6.2"
+    }
+
+    signingConfigs {
+        if (hasSigningConfig) {
+            release {
+                // storeFile 相对 android-app 根目录（build.gradle 在 app/ 子目录，故前缀 ../）
+                storeFile rootProject.file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (hasSigningConfig) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    // 纯 WebView 壳，无第三方依赖
+}

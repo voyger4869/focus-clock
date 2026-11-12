@@ -1,0 +1,44 @@
+{
+  "name": "focus-clock",
+  "version": "1.6.2",
+  "description": "番茄钟 · 专注翻页时钟（支持局域网同步）",
+  "main": "main.js",
+  "author": "focus-clock",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.focusclock.app",
+    "productName": "专注时钟",
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "manifest.json",
+      "sw.js",
+      "icon.png",
+      "icon-192.png",
+      "icon-512.png",
+      "icon.svg"
+    ],
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "icon": "icon-512.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}

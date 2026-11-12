@@ -1,0 +1,16 @@
+{
+  "name": "番茄钟 · 专注翻页时钟",
+  "short_name": "专注时钟",
+  "description": "番茄钟 / 翻页时钟，支持专注统计、打卡、倒数日与局域网同步",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a1b26",
+  "theme_color": "#1a1b26",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
