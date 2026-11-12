@@ -4,6 +4,16 @@
 
 核心应用只有一个 `index.html`（约 3400 行，纯原生 HTML/CSS/JS），无需任何框架、构建工具或第三方库，双击即可在浏览器中运行。
 
+> 🌐 **在线体验**：<https://voyger4869.github.io/focus-clock/>
+
+## 🖼️ 界面预览
+
+<!-- 在此处粘贴应用截图，示例：
+| 计时界面 | 统计看板 |
+|---------|---------|
+| <img src="docs/screenshot-timer.png" width="260"> | <img src="docs/screenshot-stats.png" width="260"> |
+-->
+
 ## ✨ 核心特性
 
 - ⏱️ **多种计时模式**：专注 / 短休息 / 长休息 / 正计时
