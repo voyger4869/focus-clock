@@ -1,6 +1,6 @@
 {
   "name": "focus-clock",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "番茄钟 · 专注翻页时钟（支持局域网同步）",
   "main": "main.js",
   "author": "focus-clock",

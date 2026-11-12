@@ -59,8 +59,6 @@ body{
   padding:16px;
   min-height:100vh;
   transition:background .3s,color .3s;
-  /* 阻止 Unicode 符号被渲染成彩色 emoji（安卓 WebView 橙色方块问题） */
-  font-variant-emoji:text;
 }
 .app{
   width:100%;
@@ -122,57 +120,80 @@ body{
 .mode-pill.active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
 .task-chip{
   display:inline-flex;align-items:center;gap:8px;
-  padding:8px 16px;border-radius:20px;font-size:13px;
+  padding:6px 14px;border-radius:20px;font-size:13px;
   background:var(--surface-2);border:1px solid var(--border);cursor:pointer;
-  margin-bottom:20px;transition:.15s;font-weight:500;
+  margin-bottom:8px;transition:.15s;font-weight:500;
 }
-.task-chip:hover{border-color:var(--accent);transform:translateY(-1px)}
-.task-chip:active{transform:translateY(0)}
+.task-chip:hover{border-color:var(--accent)}
+.task-chip:active{transform:scale(.98)}
 .task-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
 .task-chip .chev{color:var(--text-faint);font-size:11px}
-.task-chip.empty{border-style:dashed;border-color:var(--text-faint);color:var(--text-dim)}
+.task-chip.empty{color:var(--text-dim)}
 .task-chip.empty .dot{background:var(--text-faint)}
 
-/* 时钟区域 */
-.clock-stage{width:100%;display:flex;align-items:center;justify-content:center;min-height:280px;margin-bottom:20px}
+/* 番茄钟阶段指示条 */
+.pomo-strip{
+  display:flex;align-items:center;gap:10px;
+  padding:6px 14px;border-radius:20px;margin-bottom:12px;
+  background:var(--surface-2);border:1px solid var(--border);font-size:12px;
+}
+.pomo-dots{display:flex;gap:6px;align-items:center}
+.pomo-dot{width:10px;height:10px;border-radius:50%;background:transparent;border:2px solid var(--text-faint);transition:.2s}
+.pomo-dot.done{background:var(--accent);border-color:var(--accent)}
+.pomo-dot.cur{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-bg)}
+.pomo-phase{color:var(--text-dim);font-weight:500;letter-spacing:.5px}
 
-/* 时长调节区 */
+/* 时钟区域 */
+.clock-stage{width:100%;display:flex;align-items:center;justify-content:center;min-height:280px;margin-bottom:12px}
+
+/* 时长调节区（默认折叠，只显示头部胶囊） */
 .duration-ctrl{
-  width:100%;max-width:340px;padding:14px 18px;border-radius:16px;
+  width:100%;max-width:340px;border-radius:16px;
   background:var(--surface-2);border:1px solid var(--border);
   margin-bottom:20px;transition:opacity .2s;
 }
 .duration-ctrl.hidden{display:none}
 .duration-ctrl.busy{opacity:.5;pointer-events:none}
-.duration-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.duration-head{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  width:100%;padding:10px 16px;border:none;background:none;cursor:pointer;
+  font:inherit;color:inherit;text-align:left;
+}
 .duration-mode{font-size:12px;color:var(--text-dim);font-weight:600;letter-spacing:1px}
-.duration-val{font-family:var(--mono);font-size:16px;font-weight:600;color:var(--accent)}
-.duration-slider{display:flex;align-items:center;gap:10px}
+.duration-val{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent)}
+.duration-chev{color:var(--text-faint);font-size:12px;transition:transform .2s;margin-left:auto}
+.duration-ctrl.expanded .duration-chev{transform:rotate(180deg)}
+.duration-body{display:none;padding:0 16px 14px}
+.duration-ctrl.expanded .duration-body{display:block}
+
+/* 时长行（每行一个时长：标签 + 步进 + 快捷预设） */
+.dur-row{padding:10px 0;border-top:1px solid var(--border)}
+.dur-row:first-child{border-top:none;padding-top:2px}
+.dur-row-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.dur-row-label{font-size:12px;color:var(--text-dim);font-weight:600;letter-spacing:.5px}
+.dur-row-val{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent)}
+.dur-row-main{display:flex;align-items:center;gap:8px}
 .duration-minus,.duration-plus{
-  width:30px;height:30px;border-radius:9px;flex-shrink:0;cursor:pointer;
+  width:28px;height:28px;border-radius:8px;flex-shrink:0;cursor:pointer;
   background:var(--bg);border:1px solid var(--border);color:var(--text);
   font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;
   transition:.15s;
 }
 .duration-minus:hover,.duration-plus:hover{border-color:var(--accent);color:var(--accent)}
 .duration-minus:active,.duration-plus:active{transform:scale(.92)}
-.duration-slider input[type=range]{
-  flex:1;height:4px;-webkit-appearance:none;appearance:none;
-  background:var(--bg);border-radius:2px;outline:none;cursor:pointer;
+.dur-input{
+  flex:1;min-width:0;height:30px;padding:0 8px;
+  background:var(--bg);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);font-family:var(--mono);font-size:15px;font-weight:600;
+  text-align:center;
 }
-.duration-slider input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;
-  background:var(--accent);border:3px solid var(--surface);cursor:pointer;
-  box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform .15s;
-}
-.duration-slider input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
-.duration-slider input[type=range]::-moz-range-thumb{
-  width:18px;height:18px;border-radius:50%;background:var(--accent);
-  border:3px solid var(--surface);cursor:pointer;
-}
-.duration-presets{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.dur-input:focus{border-color:var(--accent)}
+.dur-input::-webkit-outer-spin-button,.dur-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.dur-input[type=number]{-moz-appearance:textfield}
+.dur-unit{font-size:11px;color:var(--text-faint);flex-shrink:0}
+.duration-presets{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
 .duration-preset{
-  padding:4px 12px;border-radius:14px;font-size:11px;cursor:pointer;
+  padding:3px 10px;border-radius:12px;font-size:11px;cursor:pointer;
   border:1px solid var(--border);background:transparent;color:var(--text-dim);
   transition:.15s;font-family:var(--mono);
 }
@@ -301,23 +322,23 @@ body{
 .section-title{font-size:13px;color:var(--text-dim);margin:18px 0 10px;display:flex;justify-content:space-between;align-items:center}
 .section-title button{background:none;border:none;color:var(--accent);font-size:12px;cursor:pointer}
 .section-actions{display:flex;gap:12px}
-.task-list{display:flex;flex-direction:column;gap:8px}
+.task-list{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow-y:auto}
 .task-item{
-  display:flex;align-items:center;gap:12px;padding:14px;
-  background:var(--surface-2);border:1px solid var(--border);border-radius:14px;
+  display:flex;align-items:center;gap:10px;padding:9px 11px;
+  background:var(--surface-2);border:1px solid var(--border);border-radius:12px;
   cursor:pointer;transition:.15s;
 }
 .task-item:hover{border-color:var(--accent)}
 .task-item.selected{border-color:var(--accent);background:var(--accent-bg)}
-.task-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
-.task-name{flex:1;font-size:14px}
+.task-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.task-name{flex:1;font-size:13px}
 .task-time{font-size:12px;color:var(--text-dim);font-family:var(--mono)}
-.task-del{background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:14px;padding:4px;display:flex;align-items:center;justify-content:center}
+.task-del{background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:13px;padding:3px;display:flex;align-items:center;justify-content:center}
 .task-del:hover{color:var(--accent-2)}
-.task-del .ico{width:14px;height:14px}
-.task-edit{background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:14px;padding:4px;display:flex;align-items:center;justify-content:center}
+.task-del .ico{width:13px;height:13px}
+.task-edit{background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:13px;padding:3px;display:flex;align-items:center;justify-content:center}
 .task-edit:hover{color:var(--accent)}
-.task-edit .ico{width:14px;height:14px}
+.task-edit .ico{width:13px;height:13px}
 
 /* 仪表盘 */
 .stat-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
@@ -446,8 +467,11 @@ body{
 .clock-opt.active{border-color:var(--accent);background:var(--accent-bg)}
 .clock-opt .preview{font-size:20px}
 .range-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:13px}
-.range-row input{width:55%;accent-color:var(--accent)}
-.range-row span:last-child{font-family:var(--mono);font-size:12px;color:var(--accent);min-width:44px;text-align:right}
+.range-row input{width:90px;accent-color:var(--accent);background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:6px 8px;font-size:13px;text-align:center;font-family:var(--mono)}
+.range-row input:focus{border-color:var(--accent)}
+.range-row input::-webkit-outer-spin-button,.range-row input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.range-row input[type=number]{-moz-appearance:textfield}
+.range-row span:last-child{font-family:var(--mono);font-size:12px;color:var(--text-dim);min-width:32px;text-align:right}
 
 /* 弹窗 */
 .modal-mask{
@@ -479,6 +503,10 @@ body{
   display:flex;align-items:center;justify-content:center;transition:.15s;
 }
 .modal-close:hover{color:var(--text);border-color:var(--accent)}
+
+/* 任务选择弹窗：更紧凑 */
+.modal-task-select{max-width:320px;padding:18px}
+.modal-task-select h3{font-size:15px;margin-bottom:14px}
 .modal-foot{
   position:sticky;bottom:-24px;margin:16px -24px -24px;padding:12px 24px;
   background:var(--surface);border-top:1px solid var(--border);
@@ -599,12 +627,17 @@ body{
 }
 .achieve-icon{font-size:24px;line-height:1}
 .achieve-name{font-size:12px;font-weight:600;margin-top:4px}
+.achieve-lv{font-size:10px;color:var(--accent);font-weight:600;margin-top:2px;letter-spacing:.3px}
 .achieve-desc{font-size:10px;color:var(--text-faint);line-height:1.3}
 .achieve-state{font-size:10px;margin-top:2px;color:var(--text-faint)}
+.achieve-bar{width:100%;height:4px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden}
+.achieve-bar-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
 .achieve-item.got{border-color:var(--accent);background:var(--accent-bg)}
 .achieve-item.got .achieve-state{color:var(--accent);font-weight:600}
 .achieve-item.ready .achieve-state{color:var(--break);font-weight:600}
 .achieve-item:not(.got) .achieve-icon{filter:grayscale(1);opacity:.45}
+.achieve-item:not(.got) .achieve-lv{color:var(--text-faint)}
+.achieve-item:not(.got) .achieve-bar-fill{background:var(--text-faint)}
 
 /* 历史备注 */
 .history-note{font-size:12px;color:var(--text-dim);margin-top:4px;font-style:italic;word-break:break-word}
@@ -718,8 +751,9 @@ body.immersive .focus-exit{display:flex}
   .minimal-time{font-size:76px}
 
   /* 时长调节区收紧 */
-  .duration-ctrl{max-width:100%;padding:12px 14px;margin-bottom:12px;border-radius:14px}
-  .duration-head{margin-bottom:10px}
+  .duration-ctrl{max-width:100%;margin-bottom:12px;border-radius:14px}
+  .duration-head{padding:8px 14px}
+  .duration-body{padding:0 14px 12px}
   .duration-presets{gap:5px;margin-top:10px}
 
   /* 目标条与按钮间距 */
@@ -753,7 +787,8 @@ body.immersive .focus-exit{display:flex}
   .clock-stage{min-height:180px}
   .mode-pills{margin-bottom:8px}
   .task-chip{margin-bottom:8px}
-  .duration-ctrl{padding:10px 12px;margin-bottom:8px}
+  .duration-ctrl{margin-bottom:8px}
+  .duration-head{padding:6px 12px}
   .duration-presets{margin-top:8px}
   .controls{margin-top:2px}
 }
@@ -829,31 +864,29 @@ textarea#syncPairInput, textarea#syncCodeOut, textarea#syncAnswerOut{
   <div class="view active" id="view-timer">
     <div class="timer-wrap">
       <div class="mode-pills">
-        <button class="mode-pill active" data-mode="focus">专注</button>
-        <button class="mode-pill" data-mode="break">短休息</button>
-        <button class="mode-pill" data-mode="longbreak">长休息</button>
-        <button class="mode-pill" data-mode="stopwatch">正计时</button>
+        <button class="mode-pill active" data-func="focus">专注</button>
+        <button class="mode-pill" data-func="pomodoro">番茄钟</button>
+        <button class="mode-pill" data-func="stopwatch">正计时</button>
       </div>
+
+      <!-- 番茄钟阶段指示条（仅番茄钟模式显示） -->
+      <div class="pomo-strip" id="pomoStrip" style="display:none"></div>
 
       <div class="task-chip" id="taskChip">
         <span class="dot" id="chipDot"></span>
-        <span id="chipName">选择任务</span>
+        <span id="chipName">＋ 选择任务</span>
         <span class="chev">›</span>
       </div>
 
       <div class="clock-stage" id="clockStage"></div>
 
       <div class="duration-ctrl" id="durationCtrl">
-        <div class="duration-head">
+        <button class="duration-head" id="durationHead" type="button">
           <span class="duration-mode" id="durationMode">专注</span>
           <span class="duration-val" id="durationVal">25 分钟</span>
-        </div>
-        <div class="duration-slider">
-          <button class="duration-minus" id="durationMinus">−</button>
-          <input type="range" id="durationRange" min="1" max="120" step="1">
-          <button class="duration-plus" id="durationPlus">+</button>
-        </div>
-        <div class="duration-presets" id="durationPresets"></div>
+          <span class="duration-chev" id="durationChev">▾</span>
+        </button>
+        <div class="duration-body" id="durationBody"></div>
       </div>
 
       <div class="goal-bar" id="goalBar" style="display:none">
@@ -971,7 +1004,7 @@ textarea#syncPairInput, textarea#syncCodeOut, textarea#syncAnswerOut{
     </div>
 
     <div class="chart-box" data-panel="achieve">
-      <div class="chart-title">成就徽章 <span class="achieve-count" id="achievementCount">0/12</span></div>
+      <div class="chart-title">成就徽章 <span class="achieve-count" id="achievementCount">0/0</span></div>
       <div class="achieve-grid" id="achievementGrid"></div>
     </div>
   </div>
@@ -1034,7 +1067,7 @@ textarea#syncPairInput, textarea#syncCodeOut, textarea#syncAnswerOut{
     <div class="setting-group">
       <h3>计时行为</h3>
       <div class="setting-toggle">
-        <span>自动衔接下一轮</span>
+        <span>番茄钟自动循环</span>
         <label class="switch"><input type="checkbox" id="toggleAutoNext"><span class="track"><span class="thumb"></span></span></label>
       </div>
       <div class="setting-toggle" style="border-bottom:none">
@@ -1063,9 +1096,9 @@ textarea#syncPairInput, textarea#syncCodeOut, textarea#syncAnswerOut{
     </div>
     <div class="setting-group">
       <h3>时长设置</h3>
-      <div class="range-row"><span>专注时长</span><input type="range" id="rangeFocus" min="5" max="90" step="5"><span id="focusVal"></span></div>
-      <div class="range-row"><span>短休息</span><input type="range" id="rangeBreak" min="1" max="30" step="1"><span id="breakVal"></span></div>
-      <div class="range-row"><span>长休息</span><input type="range" id="rangeLong" min="5" max="45" step="5"><span id="longVal"></span></div>
+      <div class="range-row"><span>专注时长</span><input type="number" id="rangeFocus" min="1" max="480" step="1"><span id="focusVal">分钟</span></div>
+      <div class="range-row"><span>短休息</span><input type="number" id="rangeBreak" min="1" max="120" step="1"><span id="breakVal">分钟</span></div>
+      <div class="range-row"><span>长休息</span><input type="number" id="rangeLong" min="1" max="180" step="1"><span id="longVal">分钟</span></div>
     </div>
     <div class="modal-actions modal-foot">
       <button class="btn btn-primary" id="btnCloseSettings">完成</button>
@@ -1140,10 +1173,10 @@ textarea#syncPairInput, textarea#syncCodeOut, textarea#syncAnswerOut{
 
 <!-- 任务选择弹窗 -->
 <div class="modal-mask" id="taskSelectModal">
-  <div class="modal">
+  <div class="modal modal-task-select">
     <h3>本次专注做什么？</h3>
     <div class="task-list" id="taskSelectList"></div>
-    <div class="modal-actions" style="margin-top:16px">
+    <div class="modal-actions" style="margin-top:14px">
       <button class="btn btn-ghost" id="btnNewTask">+ 新建任务</button>
       <button class="btn btn-primary" id="btnSelectDone">开始</button>
     </div>
@@ -1220,20 +1253,60 @@ const STATS_PANELS = [
 ];
 const STATS_PANELS_DEFAULT_ORDER = STATS_PANELS.map(p=>p.key);
 
-// 成就徽章定义：check(sessions) 返回是否达成，sessions 为专注记录数组
+// 成就徽章定义
+// 两种类型：
+//  1) 等级型 levels：递增型成就，每达成一个门槛升一级（Lv.1 ~ Lv.5）
+//     - value(sessions) 返回当前数值（幂等推导）
+//     - levels: [{n:门槛值, name:等级名}, ...]
+//  2) 计数型 count：可反复触发的成就，count(sessions) 幂等返回当前累计次数
+//     - 次数直接由数据推导，不依赖事件累加（避免重复计数）
 const ACHIEVEMENTS = [
-  {key:'first',   icon:'🍅', name:'初次专注',   desc:'完成第一个番茄',           check:(s)=>s.length>=1},
-  {key:'five',    icon:'✋', name:'渐入佳境',   desc:'累计完成 5 个番茄',        check:(s)=>s.length>=5},
-  {key:'twenty',  icon:'🎯', name:'小有成就',   desc:'累计完成 20 个番茄',       check:(s)=>s.length>=20},
-  {key:'hundred', icon:'💯', name:'番茄达人',   desc:'累计完成 100 个番茄',      check:(s)=>s.length>=100},
-  {key:'streak3', icon:'🔥', name:'三天热度',   desc:'连续专注 3 天',            check:(s)=>calcStreakDays(s)>=3},
-  {key:'streak7', icon:'⚡', name:'一周坚持',   desc:'连续专注 7 天',            check:(s)=>calcStreakDays(s)>=7},
-  {key:'streak30',icon:'👑', name:'自律王者',   desc:'连续专注 30 天',           check:(s)=>calcStreakDays(s)>=30},
-  {key:'hour2',   icon:'⏰', name:'单日两小时', desc:'单日专注超过 2 小时',      check:(s)=>bestDaySec(s)>=7200},
-  {key:'hour5',   icon:'🚀', name:'单日五小时', desc:'单日专注超过 5 小时',      check:(s)=>bestDaySec(s)>=18000},
-  {key:'early',   icon:'🌅', name:'早起鸟',     desc:'在早上 7 点前完成一次专注', check:(s)=>s.some(earlyMorning)},
-  {key:'total10', icon:'🧭', name:'累计十小时', desc:'累计专注满 10 小时',       check:(s)=>totalSec(s)>=36000},
-  {key:'total50', icon:'🏆', name:'累计五十小时',desc:'累计专注满 50 小时',      check:(s)=>totalSec(s)>=180000},
+  { key:'pomodoro', icon:'🍅', name:'番茄大师', desc:'累计完成的番茄数',
+    type:'levels',
+    value:(s)=>s.length,
+    levels:[
+      {n:1,   name:'初试锋芒'},
+      {n:5,   name:'渐入佳境'},
+      {n:20,  name:'小有成就'},
+      {n:100, name:'番茄达人'},
+      {n:500, name:'炉火纯青'},
+    ]},
+  { key:'streak', icon:'🔥', name:'坚持到底', desc:'连续专注的天数',
+    type:'levels',
+    value:(s)=>calcStreakDays(s),
+    levels:[
+      {n:3,   name:'三日热度'},
+      {n:7,   name:'一周坚持'},
+      {n:30,  name:'自律王者'},
+      {n:100, name:'百日如一'},
+      {n:365, name:'年度自律'},
+    ]},
+  { key:'bestday', icon:'🚀', name:'单日突破', desc:'单日专注最长的时长',
+    type:'levels',
+    value:(s)=>bestDaySec(s),
+    levels:[
+      {n:3600,  name:'专注一时'},
+      {n:7200,  name:'两小时'},
+      {n:18000, name:'五小时'},
+      {n:28800, name:'八小时'},
+      {n:43200, name:'十二小时'},
+    ]},
+  { key:'total', icon:'🏆', name:'累计时长', desc:'累计专注的总时长',
+    type:'levels',
+    value:(s)=>totalSec(s),
+    levels:[
+      {n:36000,   name:'十小时'},
+      {n:180000,  name:'五十小时'},
+      {n:360000,  name:'一百小时'},
+      {n:1800000, name:'五百小时'},
+      {n:3600000, name:'一千小时'},
+    ]},
+  { key:'early', icon:'🌅', name:'早起鸟', desc:'早上 7 点前完成一次专注',
+    type:'count',
+    count:(s)=>s.filter(earlyMorning).length },
+  { key:'day2h', icon:'⏰', name:'单日达标', desc:'单日专注满 2 小时',
+    type:'count',
+    count:(s)=>daysOverSec(s, 7200) },
 ];
 
 // 连续专注天数（含今天）
@@ -1262,6 +1335,17 @@ function bestDaySec(sessions){
   return Math.max(...Object.values(byDay), 0);
 }
 
+// 单日专注超过 threshold 秒的独立天数（用于计数型成就）
+function daysOverSec(sessions, threshold){
+  const byDay = {};
+  sessions.forEach(s=>{
+    const d = new Date(s.startedAt);
+    const key = d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();
+    byDay[key] = (byDay[key]||0) + s.durationSec;
+  });
+  return Object.values(byDay).filter(sec=>sec>=threshold).length;
+}
+
 // 累计专注秒数
 function totalSec(sessions){
   return sessions.reduce((a,s)=>a+(s.durationSec||0), 0);
@@ -1271,6 +1355,24 @@ function totalSec(sessions){
 function earlyMorning(s){
   const d = new Date(s.startedAt);
   return d.getHours() < 7;
+}
+
+// 成就数值格式化：番茄数/天数直接显示，秒数格式化为时长
+function fmtAchieveValue(a, n){
+  if(a.key==='bestday' || a.key==='total'){
+    return fmtDuration(n);
+  }
+  return n + (a.key==='pomodoro' ? ' 个' : ' 天');
+}
+
+// 秒数格式化为「X小时Y分」或「X分」
+function fmtDuration(sec){
+  sec = Math.floor(sec);
+  if(sec < 60) return sec + ' 秒';
+  const h = Math.floor(sec/3600);
+  const m = Math.floor((sec%3600)/60);
+  if(h > 0) return m>0 ? `${h}小时${m}分` : `${h}小时`;
+  return `${m}分钟`;
 }
 
 function load(key, def){
@@ -1294,15 +1396,17 @@ let state = {
     sound:true, alert:true,
     autoNext:false,             // 自动衔接下一轮
     dailyGoal:0,                // 每日目标（专注分钟数，0=未设置）
-    unlocked: [],               // 已解锁的成就 key 列表
+    unlocked: [],               // 旧版已解锁成就 key（保留用于迁移）
+    achievements: {},           // 新版成就状态 {key: {level, count}}
   }),
   currentTaskId: load('currentTask', null),
-  mode: 'focus',
+  mode: 'focus',          // 当前实际计时阶段：focus/break/longbreak/stopwatch
+  modeGroup: 'focus',     // 三大功能：focus(专注)/pomodoro(番茄钟)/stopwatch(正计时)
   running: false,
   paused: false,
   remaining: 25*60,
   total: 25*60,
-  roundCount: 0,
+  pomoRound: 0,           // 番茄钟当前循环内已完成的番茄数（0-3）
   stopwatchSec: 0, // 正计时累计秒数
 };
 
@@ -1379,60 +1483,89 @@ function getModeSec(mode){
   return 0; // stopwatch
 }
 
-// 各模式的时长调节配置
+// 各阶段时长配置（分钟，无严格上限，手动输入任意值，clamp 到安全范围）
 const DURATION_CFG = {
-  focus:     {min:5,  max:90, step:5, presets:[15,25,30,45,60,90]},
-  break:     {min:1,  max:30, step:1, presets:[3,5,10,15,20,30]},
-  longbreak: {min:5,  max:45, step:5, presets:[10,15,20,30,45]},
+  focus:     {key:'focusMin', label:'专注',   min:1, max:480, presets:[15,25,30,45,60,90]},
+  break:     {key:'breakMin', label:'短休息', min:1, max:120, presets:[3,5,10,15]},
+  longbreak: {key:'longMin',  label:'长休息', min:1, max:180, presets:[10,15,20,30]},
 };
 
 function getModeDurationKey(mode){
-  return mode==='focus' ? 'focusMin' : mode==='break' ? 'breakMin' : 'longMin';
+  return DURATION_CFG[mode] ? DURATION_CFG[mode].key : 'focusMin';
+}
+
+// 当前时长面板应展示哪些时长行
+function getVisibleDurRows(){
+  if(state.modeGroup === 'pomodoro') return ['focus','break','longbreak'];
+  if(state.modeGroup === 'focus') return ['focus'];
+  return []; // 正计时无时长
 }
 
 function renderDurationCtrl(){
   const ctrl = document.getElementById('durationCtrl');
-  const cfg = DURATION_CFG[state.mode];
-  if(!cfg){
+  const rows = getVisibleDurRows();
+  if(rows.length === 0){
     ctrl.classList.add('hidden');
     return;
   }
   ctrl.classList.remove('hidden');
-  const modeName = state.mode==='focus'?'专注':state.mode==='break'?'短休息':'长休息';
-  document.getElementById('durationMode').textContent = modeName;
-  const range = document.getElementById('durationRange');
-  range.min = cfg.min;
-  range.max = cfg.max;
-  range.step = cfg.step;
-  const cur = state.settings[getModeDurationKey(state.mode)];
-  range.value = cur;
   const busy = state.running || state.paused;
-  // 计时中禁用调节（本轮不变，下次生效）
-  range.disabled = busy;
-  document.getElementById('durationMinus').disabled = busy;
-  document.getElementById('durationPlus').disabled = busy;
   ctrl.classList.toggle('busy', busy);
-  document.getElementById('durationVal').textContent = (busy?'⏳ ':'') + cur + ' 分钟';
-  // 预设
-  document.getElementById('durationPresets').innerHTML = cfg.presets.map(p=>
-    `<button class="duration-preset ${p===cur?'active':''}" data-min="${p}" ${busy?'disabled':''}>${p}分</button>`
-  ).join('');
+  // 计时中强制收起面板
+  if(busy) ctrl.classList.remove('expanded');
+
+  // 头部：显示当前阶段与当前时长
+  const curCfg = DURATION_CFG[state.mode] || DURATION_CFG.focus;
+  document.getElementById('durationMode').textContent = curCfg.label;
+  document.getElementById('durationVal').textContent = (busy?'⏳ ':'') + state.settings[curCfg.key] + ' 分钟';
+
+  // 主体：渲染每一行时长设置
+  document.getElementById('durationBody').innerHTML = rows.map(mode=>{
+    const cfg = DURATION_CFG[mode];
+    const val = state.settings[cfg.key];
+    return `
+      <div class="dur-row" data-mode="${mode}">
+        <div class="dur-row-head">
+          <span class="dur-row-label">${cfg.label}</span>
+          <span class="dur-row-val">${val} 分钟</span>
+        </div>
+        <div class="dur-row-main">
+          <button class="duration-minus" data-act="minus" data-mode="${mode}" ${busy?'disabled':''}>−</button>
+          <input type="number" class="dur-input" data-mode="${mode}" value="${val}" min="${cfg.min}" max="${cfg.max}" ${busy?'disabled':''}>
+          <button class="duration-plus" data-act="plus" data-mode="${mode}" ${busy?'disabled':''}>+</button>
+          <span class="dur-unit">分钟</span>
+        </div>
+        <div class="duration-presets">
+          ${cfg.presets.map(p=>`<button class="duration-preset ${p===val?'active':''}" data-mode="${mode}" data-min="${p}" ${busy?'disabled':''}>${p}分</button>`).join('')}
+        </div>
+      </div>`;
+  }).join('');
 }
 
-function setDuration(min){
-  const key = getModeDurationKey(state.mode);
-  const cfg = DURATION_CFG[state.mode];
+// 展开/收起时长面板
+function toggleDurationPanel(){
+  const ctrl = document.getElementById('durationCtrl');
+  if(ctrl.classList.contains('hidden')) return;
+  // 计时中不允许展开（busy 状态已禁用）
+  if(state.running || state.paused) return;
+  ctrl.classList.toggle('expanded');
+}
+
+function setDuration(mode, min){
+  const cfg = DURATION_CFG[mode];
   if(!cfg) return;
-  min = Math.min(Math.max(min, cfg.min), cfg.max);
-  state.settings[key] = min;
+  min = parseInt(min);
+  if(isNaN(min) || min < 1) min = cfg.min;
+  min = Math.min(min, cfg.max);
+  state.settings[cfg.key] = min;
   save('settings', state.settings);
-  // 若当前未在计时，立即刷新时钟显示
-  if(!state.running && !state.paused){
-    state.total = getModeSec(state.mode);
+  // 若当前正显示该阶段且未计时，立即刷新时钟显示
+  if(state.mode === mode && !state.running && !state.paused){
+    state.total = getModeSec(mode);
     state.remaining = state.total;
+    updateClock();
   }
   renderDurationCtrl();
-  updateClock();
   updateRangeVals();
 }
 
@@ -1450,9 +1583,25 @@ function setMode(mode){
     state.remaining = state.total;
   }
   updateModePills();
+  updatePomoStrip();
   updateClock();
   updateControls();
   renderDurationCtrl();
+}
+
+// 切换三大功能（专注 / 番茄钟 / 正计时）
+function setFunc(func){
+  state.modeGroup = func;
+  if(func === 'pomodoro'){
+    state.pomoRound = 0;          // 从新的一组番茄开始
+    setMode('focus');             // 番茄钟从专注阶段切入
+  } else if(func === 'stopwatch'){
+    setMode('stopwatch');
+  } else {
+    setMode('focus');
+  }
+  updateModePills();
+  updatePomoStrip();
 }
 
 function startTimer(){
@@ -1635,17 +1784,21 @@ function discardTimer(){
   state.paused = false;
   notifyNativeTimer('cancel', {});
   if(state.mode === 'focus'){
-    state.roundCount++;
-    if(state.roundCount % 4 === 0){
-      setMode('longbreak');
+    if(state.modeGroup === 'pomodoro'){
+      // 番茄钟：跳过当前番茄，进入休息（计入轮次，但不算完成记录）
+      state.pomoRound++;
+      setMode((state.pomoRound % 4 === 0) ? 'longbreak' : 'break');
     } else {
-      setMode('break');
+      // 专注功能：跳过即重置回本轮时长
+      setMode('focus');
     }
   } else if(state.mode === 'stopwatch'){
     state.stopwatchSec = 0;
     state.remaining = 0;
     setMode('stopwatch');
   } else {
+    // 休息阶段跳过 → 回到专注
+    if(state.mode === 'longbreak') state.pomoRound = 0;
     setMode('focus');
   }
   renderStats();
@@ -1701,10 +1854,20 @@ function completeSession(skipped){
       recordedFocus = true;
       if(!skipped) showEncourage();
     }
-    state.roundCount++;
-    // 每4个番茄进入长休息
-    const nextMode = (state.roundCount % 4 === 0) ? 'longbreak' : 'break';
-    setMode(nextMode);
+    if(state.modeGroup === 'pomodoro'){
+      // 番茄钟：专注结束进入休息（每4个番茄一次长休息）
+      state.pomoRound++;
+      const nextMode = (state.pomoRound % 4 === 0) ? 'longbreak' : 'break';
+      setMode(nextMode);
+    } else {
+      // 专注功能：单次专注结束即停，重置为本轮时长，不自动接休息
+      state.total = getModeSec('focus');
+      state.remaining = state.total;
+      state.endAt = 0;
+      updateClock();
+      updateControls();
+      renderDurationCtrl();
+    }
   } else if(state.mode === 'stopwatch'){
     // 正计时结束：记录为专注（若选了任务且时长>0）
     const dur = state.stopwatchSec;
@@ -1723,6 +1886,8 @@ function completeSession(skipped){
     }
     setMode('stopwatch');
   } else {
+    // 休息结束（break / longbreak）→ 回到专注阶段
+    if(state.mode === 'longbreak') state.pomoRound = 0; // 一组番茄结束，开启新一组
     setMode('focus');
   }
   // 更新统计
@@ -1734,9 +1899,9 @@ function completeSession(skipped){
     checkDailyGoal();
   }
 
-  // 自动衔接下一轮：专注/休息自然结束后自动开始下一模式
-  // （跳过/提前结束不自动衔接；正计时也不自动）
-  if(!skipped && state.settings.autoNext && state.mode !== 'stopwatch'){
+  // 自动衔接下一轮：仅番茄钟模式下的专注/休息自然结束后自动开始
+  // （专注/正计时功能不自动衔接；跳过/提前结束也不自动）
+  if(!skipped && state.modeGroup === 'pomodoro' && state.settings.autoNext){
     // 稍作延迟后自动开始，让结束提示音/通知先完成
     setTimeout(()=>{
       if(!state.running && !state.paused){
@@ -1748,8 +1913,29 @@ function completeSession(skipped){
 
 function updateModePills(){
   document.querySelectorAll('.mode-pill').forEach(p=>{
-    p.classList.toggle('active', p.dataset.mode === state.mode);
+    p.classList.toggle('active', p.dataset.func === state.modeGroup);
   });
+}
+
+// 番茄钟阶段指示条：显示当前一组（4个）番茄的进度 + 阶段文字
+function updatePomoStrip(){
+  const strip = document.getElementById('pomoStrip');
+  if(!strip) return;
+  if(state.modeGroup !== 'pomodoro'){
+    strip.style.display = 'none';
+    return;
+  }
+  strip.style.display = 'flex';
+  const round = state.pomoRound; // 当前组内已完成番茄数 0-4
+  let dots = '';
+  for(let i=0;i<4;i++){
+    let cls = '';
+    if(i < round) cls = 'done';
+    else if(state.mode === 'focus' && i === round) cls = 'cur'; // 正在做的番茄
+    dots += `<span class="pomo-dot ${cls}"></span>`;
+  }
+  const phaseLabel = state.mode==='focus' ? '专注中' : state.mode==='break' ? '短休息中' : '长休息中';
+  strip.innerHTML = `<div class="pomo-dots">${dots}</div><span class="pomo-phase">${phaseLabel}</span>`;
 }
 
 function updateControls(){
@@ -1974,7 +2160,7 @@ let currentColor = TASK_COLORS[0];
 function renderTaskChip(){
   const task = state.tasks.find(t=>t.id===state.currentTaskId);
   const chip = document.getElementById('taskChip');
-  document.getElementById('chipName').textContent = task ? task.name : '选择任务';
+  document.getElementById('chipName').textContent = task ? task.name : '＋ 选择任务';
   document.getElementById('chipDot').style.background = task ? task.color : 'var(--accent)';
   chip.classList.toggle('empty', !task);
 }
@@ -2409,53 +2595,166 @@ function showEncourage(){
 }
 
 /* ============ 成就徽章 ============ */
-// 检查并解锁新成就；返回本次新解锁的成就数组（用于弹提示）
+// 旧版成就 key 到新版成就的映射（用于数据迁移）
+const ACHIEVE_MIGRATE = {
+  'first':'pomodoro', 'five':'pomodoro', 'twenty':'pomodoro', 'hundred':'pomodoro',
+  'streak3':'streak', 'streak7':'streak', 'streak30':'streak',
+  'hour2':'bestday', 'hour5':'bestday',
+  'total10':'total', 'total50':'total',
+  'early':'early',
+};
+
+// 获取某成就当前等级（0 = 未达成任何级），幂等由 sessions 推导
+function calcAchLevel(a, sessions){
+  if(a.type !== 'levels') return 0;
+  let val = 0;
+  try{ val = a.value(sessions); }catch(e){ return 0; }
+  let reached = 0;
+  a.levels.forEach((lv, i)=>{ if(val >= lv.n) reached = i+1; });
+  return reached;
+}
+
+// 获取某成就当前计数（幂等由 sessions 推导）
+function calcAchCount(a, sessions){
+  if(a.type !== 'count') return 0;
+  try{ return a.count(sessions); }catch(e){ return 0; }
+}
+
+// 迁移旧版 unlocked 数组到新 achievements 结构（幂等，只跑一次）
+function migrateAchievements(){
+  const old = state.settings.unlocked;
+  if(!Array.isArray(old) || old.length === 0) return;
+  const ach = state.settings.achievements || {};
+  const sessions = state.sessions.filter(s=>s.mode==='focus');
+  let changed = false;
+  old.forEach(oldKey=>{
+    const newKey = ACHIEVE_MIGRATE[oldKey];
+    if(!newKey) return;
+    const a = ACHIEVEMENTS.find(x=>x.key===newKey);
+    if(!a) return;
+    if(a.type === 'count'){
+      // 旧版早起鸟 → 计数型，至少记为 1 次
+      ach[newKey] = ach[newKey] || {level:0, count:0};
+      if((ach[newKey].count||0) < 1){ ach[newKey].count = 1; changed = true; }
+    } else {
+      // 等级型：旧 key 对应的等级索引
+      const lvl = oldKeyToLevel(oldKey, a);
+      if(lvl > 0){
+        ach[newKey] = ach[newKey] || {level:0, count:0};
+        if((ach[newKey].level||0) < lvl){ ach[newKey].level = lvl; changed = true; }
+      }
+    }
+  });
+  state.settings.achievements = ach;
+  state.settings.unlocked = [];
+  save('settings', state.settings);
+}
+
+// 旧 key → 等级索引（针对等级型成就）
+function oldKeyToLevel(oldKey, a){
+  const map = {
+    'first':1, 'five':2, 'twenty':3, 'hundred':4,
+    'streak3':1, 'streak7':2, 'streak30':3,
+    'hour2':2, 'hour5':3,
+    'total10':1, 'total50':2,
+  };
+  return map[oldKey] || 0;
+}
+
+// 检查并解锁新成就；返回本次新解锁/升级/计数的提示信息数组
+// 等级/计数均幂等由 sessions 推导；settings.achievements 仅存「历史最高」用于弹提示去重
 function checkAchievements(){
   const sessions = state.sessions.filter(s=>s.mode==='focus');
-  const unlocked = state.settings.unlocked || [];
-  const fresh = [];
+  const ach = state.settings.achievements || {};
+  const toasts = [];
+
   ACHIEVEMENTS.forEach(a=>{
-    if(unlocked.includes(a.key)) return;
-    try{
-      if(a.check(sessions)){
-        unlocked.push(a.key);
-        fresh.push(a);
+    if(a.type === 'levels'){
+      const prev = (ach[a.key] && ach[a.key].level) || 0;   // 历史最高等级
+      const reached = calcAchLevel(a, sessions);            // 当前实际等级
+      if(reached > prev){
+        ach[a.key] = {level: reached, count: 0};
+        const lv = a.levels[reached-1];
+        toasts.push(`🎉 成就「${a.name}」升至 Lv.${reached}（${lv.name}）`);
       }
-    }catch(e){ /* 单个成就计算异常不阻断 */ }
+    } else if(a.type === 'count'){
+      const prev = (ach[a.key] && ach[a.key].count) || 0;   // 历史最高计数
+      const cur = calcAchCount(a, sessions);                // 当前实际计数
+      if(cur > prev){
+        ach[a.key] = {level: cur>0?1:0, count: cur};
+        toasts.push(`🌅 达成「${a.name}」第 ${cur} 次`);
+      }
+    }
   });
-  if(fresh.length > 0){
-    state.settings.unlocked = unlocked;
+
+  if(toasts.length > 0){
+    state.settings.achievements = ach;
     save('settings', state.settings);
     renderAchievements();
-    // 逐个弹成就提示（最多弹一个，避免刷屏）
-    const a = fresh[0];
-    showToast(`🎉 解锁成就「${a.name}」${fresh.length>1?` 等 ${fresh.length} 项`:'——'+a.desc}`, 3000);
+    // 只弹第一条，避免刷屏
+    showToast(toasts[0], 3000);
   }
-  return fresh;
+  return toasts;
 }
 
 // 渲染成就勋章墙（统计视图内的成就面板）
 function renderAchievements(){
   const grid = document.getElementById('achievementGrid');
   if(!grid) return;
-  const unlocked = state.settings.unlocked || [];
   const sessions = state.sessions.filter(s=>s.mode==='focus');
-  const unlockedCount = ACHIEVEMENTS.filter(a=>unlocked.includes(a.key)).length;
-  document.getElementById('achievementCount').textContent = `${unlockedCount}/${ACHIEVEMENTS.length}`;
-  grid.innerHTML = ACHIEVEMENTS.map(a=>{
-    const got = unlocked.includes(a.key);
-    // 未解锁时仍尝试计算是否已满足（用于显示进度感）
-    let satisfied = got;
-    if(!got){
-      try{ satisfied = a.check(sessions); }catch(e){ satisfied = false; }
+  const total = ACHIEVEMENTS.length;   // 成就个数（6 个）
+  let unlockedCount = 0;
+  ACHIEVEMENTS.forEach(a=>{
+    if(a.type === 'levels'){
+      if(calcAchLevel(a, sessions) > 0) unlockedCount++;
+    } else {
+      if(calcAchCount(a, sessions) > 0) unlockedCount++;
     }
-    return `<div class="achieve-item ${got?'got':''} ${satisfied&&!got?'ready':''}" title="${a.desc}">
-      <div class="achieve-icon">${a.icon}</div>
-      <div class="achieve-name">${a.name}</div>
-      <div class="achieve-desc">${a.desc}</div>
-      <div class="achieve-state">${got?'已达成':(satisfied?'待领取':'未达成')}</div>
-    </div>`;
+  });
+  document.getElementById('achievementCount').textContent = `${unlockedCount}/${total}`;
+
+  grid.innerHTML = ACHIEVEMENTS.map(a=>{
+    if(a.type === 'levels'){
+      return renderLevelAchieve(a, sessions);
+    } else {
+      return renderCountAchieve(a, sessions);
+    }
   }).join('');
+}
+
+// 渲染等级型成就
+function renderLevelAchieve(a, sessions){
+  const cur = calcAchLevel(a, sessions);   // 当前实际等级（幂等）
+  const max = a.levels.length;
+  let val = 0;
+  try{ val = a.value(sessions); }catch(e){ val = 0; }
+  // 当前等级门槛与下一级门槛（用于进度条）
+  const curTh = cur>0 ? a.levels[cur-1].n : 0;
+  const nextLv = cur < max ? a.levels[cur] : null;
+  const pct = nextLv ? Math.min(100, Math.floor((val - curTh) / (nextLv.n - curTh) * 100)) : 100;
+  const lvName = cur>0 ? a.levels[cur-1].name : '未达成';
+  const nextDesc = nextLv ? `下一级：${fmtAchieveValue(a, nextLv.n)}` : '已满级';
+  const got = cur > 0;
+
+  return `<div class="achieve-item ${got?'got':''}" title="${a.desc}">
+    <div class="achieve-icon">${a.icon}</div>
+    <div class="achieve-name">${a.name}</div>
+    <div class="achieve-lv">${got?`Lv.${cur} · ${lvName}`:'未达成'}</div>
+    <div class="achieve-bar"><div class="achieve-bar-fill" style="width:${pct}%"></div></div>
+    <div class="achieve-desc">${nextDesc}</div>
+  </div>`;
+}
+
+// 渲染计数型成就
+function renderCountAchieve(a, sessions){
+  const count = calcAchCount(a, sessions);
+  const got = count > 0;
+  return `<div class="achieve-item ${got?'got':''}" title="${a.desc}">
+    <div class="achieve-icon">${a.icon}</div>
+    <div class="achieve-name">${a.name}</div>
+    <div class="achieve-desc">${a.desc}</div>
+    <div class="achieve-state">${got?`已达成 ×${count}`:'未达成'}</div>
+  </div>`;
 }
 
 /* ============ 每日目标 ============ */
@@ -3067,7 +3366,7 @@ document.querySelectorAll('.nav-btn').forEach(b=>{
 });
 
 document.querySelectorAll('.mode-pill').forEach(p=>{
-  p.addEventListener('click', ()=>setMode(p.dataset.mode));
+  p.addEventListener('click', ()=>setFunc(p.dataset.func));
 });
 
 document.getElementById('btnToggle').addEventListener('click', ()=>{
@@ -3078,38 +3377,35 @@ document.getElementById('btnReset').addEventListener('click', resetTimer);
 document.getElementById('btnFinish').addEventListener('click', finishTimer);
 document.getElementById('btnSkip').addEventListener('click', discardTimer);
 
-// 时长调节：滑块
-document.getElementById('durationRange').addEventListener('input', (e)=>{
-  setDuration(parseInt(e.target.value));
-});
-// 加减按钮
-document.getElementById('durationMinus').addEventListener('click', ()=>{
-  const cfg = DURATION_CFG[state.mode];
+// 时长调节：事件委托（body 内的行是动态渲染的）
+document.getElementById('durationBody').addEventListener('click', (e)=>{
+  const btn = e.target.closest('[data-act]');
+  if(!btn) return;
+  const mode = btn.dataset.mode;
+  const cfg = DURATION_CFG[mode];
   if(!cfg) return;
-  setDuration(state.settings[getModeDurationKey(state.mode)] - cfg.step);
+  const cur = state.settings[cfg.key];
+  if(btn.dataset.act === 'minus') setDuration(mode, cur - 1);
+  else if(btn.dataset.act === 'plus') setDuration(mode, cur + 1);
 });
-document.getElementById('durationPlus').addEventListener('click', ()=>{
-  const cfg = DURATION_CFG[state.mode];
-  if(!cfg) return;
-  setDuration(state.settings[getModeDurationKey(state.mode)] + cfg.step);
+document.getElementById('durationBody').addEventListener('click', (e)=>{
+  const preset = e.target.closest('.duration-preset');
+  if(preset) setDuration(preset.dataset.mode, parseInt(preset.dataset.min));
 });
-// 预设
-document.getElementById('durationPresets').addEventListener('click', (e)=>{
-  const btn = e.target.closest('.duration-preset');
-  if(btn) setDuration(parseInt(btn.dataset.min));
-});
-// 点击时钟数字：聚焦时长调节（滚动到可见 + 高亮提示）
-document.getElementById('clockStage').addEventListener('click', (e)=>{
-  if(e.target.closest('.ring-time') || e.target.closest('.digit') || e.target.closest('.minimal-time')){
-    const ctrl = document.getElementById('durationCtrl');
-    if(ctrl.classList.contains('hidden')) return;
-    ctrl.scrollIntoView({behavior:'smooth', block:'center'});
-    ctrl.animate(
-      [{boxShadow:'0 0 0 0 var(--accent-bg)'},{boxShadow:'0 0 0 6px var(--accent-bg)'},{boxShadow:'0 0 0 0 var(--accent-bg)'}],
-      {duration:600, iterations:1}
-    );
+// 数字输入：手动输入任意分钟（失焦或回车时生效）
+document.getElementById('durationBody').addEventListener('change', (e)=>{
+  if(e.target.classList.contains('dur-input')){
+    setDuration(e.target.dataset.mode, parseInt(e.target.value));
   }
 });
+// 点击时钟数字：展开/收起时长调节面板
+document.getElementById('clockStage').addEventListener('click', (e)=>{
+  if(e.target.closest('.ring-time') || e.target.closest('.digit') || e.target.closest('.minimal-time')){
+    toggleDurationPanel();
+  }
+});
+// 时长头部胶囊：点击展开/收起
+document.getElementById('durationHead').addEventListener('click', toggleDurationPanel);
 
 document.getElementById('taskChip').addEventListener('click', openTaskSelect);
 
@@ -3287,20 +3583,24 @@ document.getElementById('accentCustom').addEventListener('input', (e)=>{
 });
 
 ['rangeFocus','rangeBreak','rangeLong'].forEach((id,idx)=>{
-  document.getElementById(id).addEventListener('input', ()=>{
+  document.getElementById(id).addEventListener('change', ()=>{
     const keys = ['focusMin','breakMin','longMin'];
-    state.settings[keys[idx]] = parseInt(document.getElementById(id).value);
+    const cfgKeys = ['focus','break','longbreak'];
+    let v = parseInt(document.getElementById(id).value);
+    if(isNaN(v) || v < 1) v = 1;
+    const mode = cfgKeys[idx];
+    v = Math.min(v, DURATION_CFG[mode].max);
+    state.settings[keys[idx]] = v;
+    document.getElementById(id).value = v;
     save('settings', state.settings);
     updateRangeVals();
     renderDurationCtrl();
-    // 若当前正是该模式，立即同步总时长；未计时时重置剩余时间并实时刷新显示
-    const modeKeys = {0:'focus',1:'break',2:'longbreak'};
-    if(state.mode === modeKeys[idx]){
+    // 若当前正是该阶段，立即同步总时长
+    if(state.mode === mode){
       if(!state.running && !state.paused){
         state.total = getModeSec(state.mode);
         state.remaining = state.total;
       } else if(state.total !== getModeSec(state.mode)){
-        // 正在计时/暂停时，也更新目标总时长（保持比例或直接重置显示）
         state.total = getModeSec(state.mode);
       }
       updateClock();
@@ -3308,9 +3608,9 @@ document.getElementById('accentCustom').addEventListener('input', (e)=>{
   });
 });
 function updateRangeVals(){
-  document.getElementById('focusVal').textContent = state.settings.focusMin+' 分';
-  document.getElementById('breakVal').textContent = state.settings.breakMin+' 分';
-  document.getElementById('longVal').textContent = state.settings.longMin+' 分';
+  document.getElementById('focusVal').textContent = state.settings.focusMin+' 分钟';
+  document.getElementById('breakVal').textContent = state.settings.breakMin+' 分钟';
+  document.getElementById('longVal').textContent = state.settings.longMin+' 分钟';
 }
 
 // 点击遮罩关闭弹窗
@@ -3324,7 +3624,7 @@ document.getElementById('toggleAlert').addEventListener('change', (e)=>{
   save('settings', state.settings);
 });
 
-// 自动衔接下一轮
+// 番茄钟自动循环
 document.getElementById('toggleAutoNext').addEventListener('change', (e)=>{
   state.settings.autoNext = e.target.checked;
   save('settings', state.settings);
@@ -3801,6 +4101,7 @@ document.getElementById('syncPairInput').addEventListener('input', (e)=>{
 /* ============ 初始化 ============ */
 function init(){
   applyTheme();
+  migrateAchievements();
   buildClockDom();
   setMode('focus');
   renderTaskChip();
